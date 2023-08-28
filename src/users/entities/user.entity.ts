@@ -9,7 +9,7 @@ import {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ name: 'name', type: 'varchar' })
   name: string;
@@ -23,8 +23,8 @@ export class User {
   @Column({ name: 'sequence_days', type: 'int' })
   sequenceDays: number;
 
-  @Column({ name: 'time_displayed', type: 'timestamptz' })
-  timeDisplayed: Date;
+  @Column({ name: 'time_displayed_in_seconds', type: 'int' })
+  timeDisplayedInSeconds: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

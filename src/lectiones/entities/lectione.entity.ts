@@ -12,10 +12,10 @@ import {
 @Entity('lectiones')
 export class Lectione {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
-  @Column({ name: 'total_time', type: 'timestamptz' })
-  totalTime: Date;
+  @Column({ name: 'total_time', type: 'int' })
+  totalTime: number;
 
   @Column({ name: 'text', type: 'varchar' })
   text: string;
@@ -23,8 +23,8 @@ export class Lectione {
   @Column({ name: 'practical_resolution', type: 'varchar' })
   practicalResolution: string;
 
-  @Column({ name: 'prayer_time', type: 'timestamptz' })
-  prayerTime: Date;
+  @Column({ name: 'prayer_time', type: 'int' })
+  prayerTime: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
