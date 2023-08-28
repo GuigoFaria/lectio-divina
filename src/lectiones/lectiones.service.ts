@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
 import { CreateLectioneDto } from './dto/create-lectione.dto';
-import { UpdateLectioneDto } from './dto/update-lectione.dto';
+import { Lectione } from './entities/lectione.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class LectionesService {
-  create(createLectioneDto: CreateLectioneDto) {
-    return 'This action adds a new lectione';
+  constructor(
+    @InjectRepository(Lectione)
+    private readonly lectionesRepository: Repository<Lectione>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+  ) {}
+  async create(
+    @Body() createLectioneDto: CreateLectioneDto,
+  ): Promise<Lectione> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id: createLectioneDto.userId },
+      });
+      if (user) {
+        const lectione = this.lectionesRepository.create({
+          ...createLectioneDto,
+        });
+        lectione.user = user;
+        return await this.lectionesRepository.save(lectione);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all lectiones`;
+  findAllByUser(userId: string) {
+    return this.lectionesRepository.find({ where: { user: { id: userId } } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} lectione`;
-  }
-
-  update(id: number, updateLectioneDto: UpdateLectioneDto) {
-    return `This action updates a #${id} lectione`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} lectione`;
+  findOne(id: string) {
+    return this.lectionesRepository.findOne({ where: { id } });
   }
 }

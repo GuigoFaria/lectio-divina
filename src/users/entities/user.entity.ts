@@ -20,10 +20,10 @@ export class User {
   @Column({ name: 'password', type: 'varchar' })
   password: string;
 
-  @Column({ name: 'sequence_days', type: 'int' })
+  @Column({ name: 'sequence_days', type: 'int', nullable: true })
   sequenceDays: number;
 
-  @Column({ name: 'time_displayed_in_seconds', type: 'int' })
+  @Column({ name: 'time_displayed_in_seconds', type: 'int', nullable: true })
   timeDisplayedInSeconds: number;
 
   @CreateDateColumn({ name: 'created_at' })
