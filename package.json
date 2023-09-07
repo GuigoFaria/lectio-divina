@@ -85,8 +85,8 @@
     },
     "modulePathIgnorePatterns": [
       "<rootDir>/db",
-      "/mocks.*",
       ".*\\.module\\.ts$",
+      ".*\\.entity\\.ts$",
       ".*\\.mock\\.ts$"
     ]
   }
