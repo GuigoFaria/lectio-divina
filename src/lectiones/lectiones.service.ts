@@ -1,39 +1,36 @@
-import { Body, Injectable } from '@nestjs/common';
+import { BadRequestException, Body, Injectable } from '@nestjs/common';
 import { CreateLectioneDto } from './dto/create-lectione.dto';
 import { Lectione } from './entities/lectione.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class LectionesService {
   constructor(
     @InjectRepository(Lectione)
     private readonly lectionesRepository: Repository<Lectione>,
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly usersService: UsersService,
   ) {}
   async create(
     @Body() createLectioneDto: CreateLectioneDto,
   ): Promise<Lectione> {
-    try {
-      const user = await this.usersRepository.findOne({
-        where: { id: createLectioneDto.userId },
-      });
-      if (user) {
-        const lectione = this.lectionesRepository.create({
-          ...createLectioneDto,
-        });
-        lectione.user = user;
-        return await this.lectionesRepository.save(lectione);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    const user = await this.usersService.findOne(createLectioneDto.userId);
+    if (!user) throw new BadRequestException('User not found');
+
+    const lectione = this.lectionesRepository.create({
+      ...createLectioneDto,
+    });
+
+    lectione.user = user;
+
+    return this.lectionesRepository.save(lectione);
   }
 
   findAllByUser(userId: string) {
-    return this.lectionesRepository.find({ where: { user: { id: userId } } });
+    return this.lectionesRepository.find({
+      where: { user: { id: userId } },
+    });
   }
 
   findOne(id: string) {

@@ -17,7 +17,7 @@ export class User {
   @Column({ name: 'email', type: 'varchar' })
   email: string;
 
-  @Column({ name: 'password', type: 'varchar' })
+  @Column({ name: 'password', type: 'varchar', select: false })
   password: string;
 
   @Column({ name: 'sequence_days', type: 'int', nullable: true })

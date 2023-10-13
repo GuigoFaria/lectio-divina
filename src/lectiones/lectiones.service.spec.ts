@@ -8,6 +8,7 @@ import { CreateLectioneDto } from './dto/create-lectione.dto';
 import { Repository } from 'typeorm';
 import { mockUserRepository } from 'src/users/mocks/UserRepository.mock';
 import { mockLectioneRepository } from './mocks/LectioneRepository.mock';
+import { UsersService } from 'src/users/users.service';
 
 describe('LectionesService', () => {
   const user: User = {
@@ -21,12 +22,14 @@ describe('LectionesService', () => {
     updatedAt: new Date('01-01-2022'),
   };
   let service: LectionesService;
+  let usersService: UsersService;
   let repositoryLectione: Repository<Lectione>;
-  let repositoryUser: Repository<User>;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LectionesService,
+        UsersService,
         {
           provide: getRepositoryToken(User),
           useValue: mockUserRepository,
@@ -42,13 +45,12 @@ describe('LectionesService', () => {
     repositoryLectione = module.get<Repository<Lectione>>(
       getRepositoryToken(Lectione),
     );
-    repositoryUser = module.get<Repository<User>>(getRepositoryToken(User));
+    usersService = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(repositoryLectione).toBeDefined();
-    expect(repositoryUser).toBeDefined();
   });
 
   it('should create a lectione', async () => {
@@ -65,14 +67,15 @@ describe('LectionesService', () => {
       prayerTime: createDto.prayerTime,
       text: createDto.text,
       totalTime: createDto.totalTime,
-      user,
       userId: '1',
+      user: user,
     };
+    const spyFindOne = jest
+      .spyOn(usersService, 'findOne')
+      .mockResolvedValue(user);
     const result = await service.create(createDto);
     expect(result).toStrictEqual(expectedReturn);
-    expect(repositoryUser.findOne).toHaveBeenCalledWith({
-      where: { id: createDto.userId },
-    });
+    expect(spyFindOne).toHaveBeenCalledWith(createDto.userId);
     expect(repositoryLectione.create).toHaveBeenCalledWith(expectedReturn);
     expect(repositoryLectione.save).toHaveBeenCalledWith(expectedReturn);
   });
@@ -85,15 +88,13 @@ describe('LectionesService', () => {
       userId: '',
     };
     const spyFindOne = jest
-      .spyOn(repositoryUser, 'findOne')
-      .mockRejectedValue(null);
+      .spyOn(usersService, 'findOne')
+      .mockResolvedValue(null);
     try {
       await service.create(createDto);
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
-      expect(spyFindOne).toHaveBeenCalledWith({
-        where: { id: createDto.userId },
-      });
+      expect(spyFindOne).toHaveBeenCalledWith(createDto.userId);
     }
   });
 
@@ -132,7 +133,7 @@ describe('LectionesService', () => {
   });
 
   it('should find one lectione by id', async () => {
-    const expectedLectione: Lectione = {
+    const expectedLectione = {
       id: '1',
       updatedAt: new Date(),
       createdAt: new Date(),
@@ -140,7 +141,7 @@ describe('LectionesService', () => {
       prayerTime: 10,
       text: 'text',
       totalTime: 10,
-      user: user,
+      user,
     };
     const spyFind = jest
       .spyOn(repositoryLectione, 'findOne')

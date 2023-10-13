@@ -7,6 +7,7 @@ import { mockUserRepository } from 'src/users/mocks/UserRepository.mock';
 import { Lectione } from './entities/lectione.entity';
 import { mockLectioneRepository } from './mocks/LectioneRepository.mock';
 import { CreateLectioneDto } from './dto/create-lectione.dto';
+import { UsersService } from 'src/users/users.service';
 
 describe('LectionesController', () => {
   let controller: LectionesController;
@@ -27,6 +28,7 @@ describe('LectionesController', () => {
       controllers: [LectionesController],
       providers: [
         LectionesService,
+        UsersService,
         {
           provide: getRepositoryToken(User),
           useValue: mockUserRepository,
