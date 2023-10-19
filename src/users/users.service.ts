@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { genSalt, hash } from 'bcrypt';
 
 @Injectable()
@@ -24,5 +24,12 @@ export class UsersService {
 
   findOne(id: string) {
     return this.usersRepository.findOne({ where: { id } });
+  }
+
+  findOneAuthOrFail(conditions: FindOptionsWhere<User>) {
+    return this.usersRepository.findOneOrFail({
+      where: { ...conditions },
+      select: ['id', 'name', 'email', 'password'],
+    });
   }
 }

@@ -13,7 +13,7 @@ async function bootstrap() {
     .setTitle('Lectio Divina API')
     .setDescription('The devocion API description')
     .setVersion('1.0')
-    .addTag('lectio-divina')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateLectioneDto } from './dto/create-lectione.dto';
 import { Lectione } from './entities/lectione.entity';
 import { Repository } from 'typeorm';
@@ -12,9 +12,7 @@ export class LectionesService {
     private readonly lectionesRepository: Repository<Lectione>,
     private readonly usersService: UsersService,
   ) {}
-  async create(
-    @Body() createLectioneDto: CreateLectioneDto,
-  ): Promise<Lectione> {
+  async create(createLectioneDto: CreateLectioneDto): Promise<Lectione> {
     const user = await this.usersService.findOne(createLectioneDto.userId);
     if (!user) throw new BadRequestException('User not found');
 
