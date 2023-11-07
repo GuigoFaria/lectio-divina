@@ -9,7 +9,6 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Req() req: any) {
-    //Só pra aparecer no swagger
     return await this.authService.login(req.user);
   }
 }
